@@ -7,34 +7,111 @@ from rollyourown.seo.admin import register_seo_admin, get_inline
 from page.models import *
 #from page.seo import SEOMetadata
 from mptt.admin import FeinCMSModelAdmin
+from modeltranslation.admin import TranslationAdmin, TranslationTabularInline, TranslationStackedInline
+from filesandimages.admin import AttachedImageInline, AttachedFileInline
+from django.conf import settings
 
 #register_seo_admin(admin.site, SEOMetadata)
 
-class PageAdmin(admin.ModelAdmin):
+try:
+    MULTILANGUAGE =  settings.PAGE_MULTILANGUAGE
+except Exception as e:
+    MULTILANGUAGE = False
+
+if MULTILANGUAGE:
+    js_multilang = (
+        '/static/modeltranslation/js/force_jquery.js',
+        'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js',
+        '/static/modeltranslation/js/tabbed_translation_fields.js',
+        )
+    css_multilang = {
+        'screen': ('/static/modeltranslation/css/tabbed_translation_fields.css',),
+        }
+else:
+    js_multilang = []
+    css_multilang = {}
+
+if MULTILANGUAGE:
+    class ActionAdminBase(FeinCMSModelAdmin, TranslationAdmin):
+        pass
+
+    class ActionInlineBase(TranslationStackedInline):
+        pass
+
+    class PageAdminBase(TranslationAdmin):
+        pass
+
+    class PageBlockAdminBase(TranslationAdmin):
+        pass
+
+    class PageBlockInlineBase(TranslationStackedInline):
+        pass
+else:
+    class ActionAdminBase(FeinCMSModelAdmin):
+        pass
+
+    class ActionInlineBase(admin.StackedInline):
+        pass
+
+    class PageAdminBase(admin.ModelAdmin):
+        pass
+
+    class PageBlockAdminBase(admin.ModelAdmin):
+        pass
+
+    class PageBlockInlineBase(admin.StackedInline):
+        pass
+
+
+class PageBlockInline(PageBlockInlineBase):
+    model = PageBlock
+    extra = 0
+
+class PageAdmin(PageAdminBase):
     """
     """
     prepopulated_fields = prepopulated_fields = {"slug": ("title",)}
     formfield_overrides = {
         models.TextField: {'widget':forms.Textarea(attrs={'class':'ckeditor'})}
     }
+    inlines = [PageBlockInline]
+#    exclude = ['page_blocks']
 
     class Media:
-        js = (settings.MEDIA_URL + 'ckeditor/ckeditor.js',)
+        js = js_multilang + (settings.MEDIA_URL + 'ckeditor/ckeditor.js',)
+        css = css_multilang
     
 admin.site.register(Page, PageAdmin)
 
-class ActionInline(admin.TabularInline):
+class PageBlockAdmin(PageBlockAdminBase):
+    inlines = [AttachedImageInline, AttachedFileInline]
+
+    class Media:
+        js = js_multilang
+        css = css_multilang
+
+admin.site.register(PageBlock, PageBlockAdmin)
+
+class ActionInline(ActionInlineBase):
     model = Action
     extra = 1
 
 class ActionGroupAdmin(admin.ModelAdmin):
     inlines = [ActionInline,]
 
+    class Media:
+        js = js_multilang
+        css = css_multilang
+
 admin.site.register(ActionGroup, ActionGroupAdmin)
 
-class ActionAdmin(FeinCMSModelAdmin):
+class ActionAdmin(ActionAdminBase):
     list_filter = ('group',)
     list_display = ('__unicode__', 'active', 'group',)
     list_editable = ('active', 'group',)
+
+    class Media:
+        js = js_multilang
+        css = css_multilang
 
 admin.site.register(Action, ActionAdmin)

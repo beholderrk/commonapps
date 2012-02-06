@@ -4,8 +4,11 @@ from django.contrib.sitemaps import Sitemap, ping_google
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse, resolve
+from django.conf import settings
+from django.contrib.contenttypes import generic
 
 from mptt.models import MPTTModel
+from filesandimages.models import AttachedImage, AttachedFile
 
 class ActionGroup(models.Model):
     """Actions of a action group can be displayed on several parts of the web
@@ -71,17 +74,29 @@ class Action(MPTTModel):
             self.title = self.page.title
         super(Action, self).save(*args, **kwargs)
 
+
+
 class Page(models.Model):
     """An simple HTML page, which may have an optional file to download.
     """
+    try:
+        TEMPLATE_CHOISES = settings.PAGE_TEMPLATE_CHOISES
+    except Exception as e:
+        TEMPLATE_CHOISES = (
+            ("page/page.html", u"Текстовая страница"),
+        )
+
     title = models.CharField(_(u"Title"), max_length=100)
     slug = models.CharField(_(u"Slug"), max_length=100)
-    short_text = models.TextField(blank=True,)
-    body = models.TextField(_(u"Text"), blank=True,)
+    template_name = models.CharField(_(u"Template"), choices=TEMPLATE_CHOISES, max_length=300)
     active = models.BooleanField(_(u"Active"), default=False)
     exclude_from_navigation = models.BooleanField(_(u"Exclude from navigation"), default=False)
     position = models.IntegerField(_(u"Position"), default=999)
-    file = models.FileField(_(u"File"), blank=True, upload_to="files")
+#    page_blocks = models.ManyToManyField('PageBlock', related_name='pages_containing')
+
+#    short_text = models.TextField(blank=True,)
+#    body = models.TextField(_(u"Text"), blank=True,)
+#    file = models.FileField(_(u"File"), blank=True, upload_to="files")
     
     class Meta: 
         ordering = ("position", )
@@ -109,3 +124,25 @@ class PagesSitemap(Sitemap):
     def items(self):
         return Page.objects.filter(active=True)
 
+
+class PageBlock(models.Model):
+    """Block for text page may contain text fields, images or files"""
+    name = models.CharField(_(u'block name'), max_length=250)
+    title = models.TextField(_(u'block title'), blank=True)
+    body = models.TextField(_(u'block body'), blank=True)
+    link = models.CharField(_(u'block link'), blank=True, max_length=500)
+    images = generic.GenericRelation(AttachedImage, verbose_name=_(u'block images'),
+        object_id_field="content_id", content_type_field="content_type")
+    files = generic.GenericRelation(AttachedFile, verbose_name=_(u'block files'),
+        object_id_field="content_id", content_type_field="content_type")
+    position = models.IntegerField(_(u'Position'), default=999)
+    active = models.BooleanField(_(u'Active'), default=True)
+    page = models.ForeignKey(Page, verbose_name=_(u'Page'), blank=True, null=True, related_name='pages_containing')
+
+    class Meta:
+        ordering = ("position", )
+        verbose_name = u'блок для текстовых страниц'
+        verbose_name_plural = u'блоки для текстовых страниц'
+
+    def __unicode__(self):
+        return '%s - %s' % (self.page.title, self.name)

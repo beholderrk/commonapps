@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse, resolve
 from page.models import *
 import json
 from django.utils.html import strip_tags
+from django.utils.translation import ugettext as _
 
 register = template.Library()
 
