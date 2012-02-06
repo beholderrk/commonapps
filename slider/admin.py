@@ -3,7 +3,7 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from sorl.thumbnail.shortcuts import get_thumbnail
-from ecko.slider.models import *
+from slider.models import *
 class SliderAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", 'admin_image_preview', "display", 'position', ]
     list_editable = ["display", 'position', ]
