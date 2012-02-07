@@ -2,7 +2,6 @@
 from django.contrib import admin
 from django import forms
 from django.db import models
-from django.conf import settings
 from rollyourown.seo.admin import register_seo_admin, get_inline
 from page.models import *
 #from page.seo import SEOMetadata
@@ -44,7 +43,7 @@ if MULTILANGUAGE:
     class PageBlockAdminBase(TranslationAdmin):
         pass
 
-    class PageBlockInlineBase(TranslationStackedInline):
+    class PageBlockInlineBase(TranslationTabularInline):
         pass
 else:
     class ActionAdminBase(FeinCMSModelAdmin):
@@ -66,28 +65,35 @@ else:
 class PageBlockInline(PageBlockInlineBase):
     model = PageBlock
     extra = 0
+    template = "admin/page/tabular.html"
+    fields = ['name', 'title']
+    readonly_fields = ['title',]
+
+page_css = { 'screen': css_multilang.get('screen') + (settings.STATIC_URL + 'fancybox/jquery.fancybox.css',)}
 
 class PageAdmin(PageAdminBase):
     """
     """
     prepopulated_fields = prepopulated_fields = {"slug": ("title",)}
-    formfield_overrides = {
-        models.TextField: {'widget':forms.Textarea(attrs={'class':'ckeditor'})}
-    }
     inlines = [PageBlockInline]
 #    exclude = ['page_blocks']
 
     class Media:
-        js = js_multilang + (settings.MEDIA_URL + 'ckeditor/ckeditor.js',)
-        css = css_multilang
+        js = js_multilang  + (settings.MEDIA_URL + 'ckeditor/ckeditor.js',
+                              settings.STATIC_URL + 'fancybox/jquery.fancybox.pack.js',
+                              settings.STATIC_URL + 'js/page_edit_form.js',)
+        css = page_css
     
 admin.site.register(Page, PageAdmin)
 
 class PageBlockAdmin(PageBlockAdminBase):
     inlines = [AttachedImageInline, AttachedFileInline]
+    formfield_overrides = {
+        models.TextField: {'widget':forms.Textarea(attrs={'class':'ckeditor'})}
+    }
 
     class Media:
-        js = js_multilang
+        js = js_multilang + (settings.MEDIA_URL + 'ckeditor/ckeditor.js',)
         css = css_multilang
 
 admin.site.register(PageBlock, PageBlockAdmin)
