@@ -20,15 +20,15 @@ except Exception as e:
 
 if MULTILANGUAGE:
     js_multilang = (
-        '/static/modeltranslation/js/force_jquery.js',
+        settings.STATIC_URL + 'modeltranslation/js/force_jquery.js',
         'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js',
-        '/static/modeltranslation/js/tabbed_translation_fields.js',
+        settings.STATIC_URL + 'modeltranslation/js/tabbed_translation_fields.js',
         )
     css_multilang = {
-        'screen': ('/static/modeltranslation/css/tabbed_translation_fields.css',),
+        'screen': (settings.STATIC_URL + 'modeltranslation/css/tabbed_translation_fields.css',),
         }
 else:
-    js_multilang = []
+    js_multilang = ()
     css_multilang = {}
 
 if MULTILANGUAGE:
