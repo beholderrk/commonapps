@@ -2,9 +2,23 @@
 # django imports
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 from sorl.thumbnail.shortcuts import get_thumbnail
-from slider.models import *
-class SliderAdmin(admin.ModelAdmin):
+from sorl.thumbnail.admin import AdminImageMixin, AdminInlineImageMixin
+from slider.models import Slide, Slider
+
+MODELTRANSLATION = bool(getattr(settings, "MODELTRANSLATION_TRANSLATION_REGISTRY"))
+
+if MODELTRANSLATION:
+    from modeltranslation.admin import TranslationTabularInline, TranslationStackedInline
+
+    class AdminBaseInline(TranslationStackedInline):
+        pass
+else:
+    class AdminBaseInline(admin.TabularInline):
+        pass
+
+class SlideAdmin(AdminImageMixin, admin.ModelAdmin):
     list_display = ["__unicode__", 'admin_image_preview', "display", 'position', ]
     list_editable = ["display", 'position', ]
 
@@ -15,4 +29,24 @@ class SliderAdmin(admin.ModelAdmin):
         return ''
     admin_image_preview.short_description = _(u'превью')
     admin_image_preview.allow_tags = True
-admin.site.register(Slider)
+
+class SlideInline(AdminInlineImageMixin, AdminBaseInline):
+    model = Slide
+
+class SliderAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slides_count']
+    readonly_fields = ['name',]
+    inlines = [SlideInline,]
+
+    def slides_count(self, obj):
+        return obj.slides.count()
+    slides_count.short_description = u'количество слайдов'
+
+    if MODELTRANSLATION:
+        class Media:
+            js = settings.JS_MULTILANG
+            css = settings.CSS_MULTILANG
+
+
+admin.site.register(Slide, SlideAdmin)
+admin.site.register(Slider, SliderAdmin)
