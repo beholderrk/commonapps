@@ -10,15 +10,17 @@ from slider.models import Slide, Slider
 MODELTRANSLATION = bool(getattr(settings, "MODELTRANSLATION_TRANSLATION_REGISTRY"))
 
 if MODELTRANSLATION:
-    from modeltranslation.admin import TranslationTabularInline, TranslationStackedInline
+    from modeltranslation.admin import TranslationTabularInline, TranslationStackedInline, TranslationAdmin
 
     class AdminBaseInline(TranslationStackedInline):
         pass
+    class AdminBase(TranslationAdmin):pass
 else:
     class AdminBaseInline(admin.TabularInline):
         pass
+    class AdminBase(admin.ModelAdmin):pass
 
-class SlideAdmin(AdminImageMixin, admin.ModelAdmin):
+class SlideAdmin(AdminImageMixin, AdminBase):
     list_display = ["__unicode__", 'admin_image_preview', "display", 'position', ]
     list_editable = ["display", 'position', ]
 
@@ -29,6 +31,11 @@ class SlideAdmin(AdminImageMixin, admin.ModelAdmin):
         return ''
     admin_image_preview.short_description = _(u'превью')
     admin_image_preview.allow_tags = True
+
+    if MODELTRANSLATION:
+        class Media:
+            js = settings.JS_MULTILANG
+            css = settings.CSS_MULTILANG
 
 class SlideInline(AdminInlineImageMixin, AdminBaseInline):
     model = Slide
