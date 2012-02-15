@@ -11,6 +11,8 @@ class SliderNode(template.Node):
         self.template_name = template_name or 'slider/slider.html'
 
     def render(self, context):
+        self.slider_name = template.Variable(self.slider_name).resolve(context)
+
         slider, success = Slider.objects.get_or_create(name = self.slider_name)
         slides = slider.slides.filter(display=True)
         if self.var_name:

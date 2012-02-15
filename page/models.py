@@ -87,7 +87,7 @@ class Page(models.Model):
         )
 
     title = models.CharField(_(u"Title"), max_length=100)
-    slug = models.CharField(_(u"Slug"), max_length=100)
+    slug = models.CharField(_(u"Slug"), max_length=100, unique=True)
     template_name = models.CharField(_(u"Template"), choices=TEMPLATE_CHOISES, max_length=300)
     active = models.BooleanField(_(u"Active"), default=False)
     exclude_from_navigation = models.BooleanField(_(u"Exclude from navigation"), default=False)
