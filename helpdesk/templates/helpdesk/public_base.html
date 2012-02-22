@@ -1,0 +1,22 @@
+{% load i18n %}<html>
+<head>
+<title>{% block helpdesk_title %}{% trans "Helpdesk" %}{% endblock %}</title>
+<script src='{{ STATIC_URL }}helpdesk/jquery-1.5.min.js' type='text/javascript' language='javascript'></script>
+<link rel='stylesheet' href='{{ STATIC_URL }}helpdesk/helpdesk.css' type='text/css' />
+{% block helpdesk_head %}{% endblock %}
+</head>
+<body>
+<div id='container'>
+    <div id='header'>
+        <h1>{% trans "Helpdesk" %}</h1>
+        {% include "helpdesk/navigation.html" %}
+    </div>
+    <div id='body'>
+{% block helpdesk_body %}{% endblock %}
+    </div>
+    <div id='footer'>
+        <p>{% include "helpdesk/attribution.html" %}</p>
+    </div>
+</div>{% include "helpdesk/debug.html" %}
+</body>
+</html>
