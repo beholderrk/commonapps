@@ -6,7 +6,6 @@ from rollyourown.seo.admin import register_seo_admin, get_inline
 from page.models import *
 #from page.seo import SEOMetadata
 from mptt.admin import FeinCMSModelAdmin
-from modeltranslation.admin import TranslationAdmin, TranslationTabularInline, TranslationStackedInline
 from filesandimages.admin import AttachedImageInline, AttachedFileInline
 from django.conf import settings
 
@@ -18,6 +17,7 @@ except Exception as e:
     MULTILANGUAGE = False
 
 if MULTILANGUAGE:
+
     js_multilang = (
         settings.STATIC_URL + 'modeltranslation/js/force_jquery.js',
         'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js',
@@ -31,6 +31,8 @@ else:
     css_multilang = {}
 
 if MULTILANGUAGE:
+    from modeltranslation.admin import TranslationAdmin, TranslationTabularInline, TranslationStackedInline
+
     class ActionAdminBase(FeinCMSModelAdmin, TranslationAdmin):
         pass
 
