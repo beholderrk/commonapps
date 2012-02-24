@@ -173,10 +173,15 @@ def view_ticket(request, ticket_id):
 
         return update_ticket(request, ticket_id)
 
+    if request.user.is_superuser:
+        active_users = User.objects.filter(is_active=True).order_by('username')
+    else:
+        active_users = User.objects.filter(is_active=True).filter(Q(is_superuser=True)|Q(pk=request.user.id)).order_by('username')
+
     return render_to_response('helpdesk/ticket.html',
         RequestContext(request, {
             'ticket': ticket,
-            'active_users': User.objects.filter(is_active=True).filter(Q(is_superuser=True)|Q(pk=request.user.id)).order_by('username'),
+            'active_users': active_users,
             'priorities': Ticket.PRIORITY_CHOICES,
             'preset_replies': PreSetReply.objects.filter(Q(queues=ticket.queue) | Q(queues__isnull=True)),
             'tags_enabled': HAS_TAG_SUPPORT,
