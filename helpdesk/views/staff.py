@@ -681,6 +681,8 @@ def edit_ticket(request, ticket_id):
             return HttpResponseRedirect(ticket.get_absolute_url())
     else:
         form = EditTicketForm(instance=ticket)
+
+    form.fields['queue'].choices = [('', '--------')] + [[q.id, q.title] for q in Queue.objects.all()]
     
     return render_to_response('helpdesk/edit_ticket.html',
         RequestContext(request, {
