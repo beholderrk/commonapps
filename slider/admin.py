@@ -44,6 +44,7 @@ class SliderAdmin(admin.ModelAdmin):
     list_display = ['name', 'slides_count']
     readonly_fields = ['name',]
     inlines = [SlideInline,]
+    save_on_top = True
 
     def slides_count(self, obj):
         return obj.slides.count()
