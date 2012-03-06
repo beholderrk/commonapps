@@ -7,7 +7,7 @@ from sorl.thumbnail.shortcuts import get_thumbnail
 from sorl.thumbnail.admin import AdminImageMixin, AdminInlineImageMixin
 from slider.models import Slide, Slider
 
-MODELTRANSLATION = bool(getattr(settings, "MODELTRANSLATION_TRANSLATION_REGISTRY"))
+MODELTRANSLATION = 'modeltranslation' in settings.INSTALLED_APPS
 
 if MODELTRANSLATION:
     from modeltranslation.admin import TranslationTabularInline, TranslationStackedInline, TranslationAdmin
