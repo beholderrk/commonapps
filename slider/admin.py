@@ -7,7 +7,7 @@ from sorl.thumbnail.shortcuts import get_thumbnail
 from sorl.thumbnail.admin import AdminImageMixin, AdminInlineImageMixin
 from slider.models import Slide, Slider
 
-MODELTRANSLATION = bool(getattr(settings, "MODELTRANSLATION_TRANSLATION_REGISTRY"))
+MODELTRANSLATION = bool(getattr(settings, "MODELTRANSLATION_TRANSLATION_REGISTRY", False))
 
 if MODELTRANSLATION:
     from modeltranslation.admin import TranslationTabularInline, TranslationStackedInline, TranslationAdmin
@@ -16,7 +16,7 @@ if MODELTRANSLATION:
         pass
     class AdminBase(TranslationAdmin):pass
 else:
-    class AdminBaseInline(admin.TabularInline):
+    class AdminBaseInline(admin.StackedInline):
         pass
     class AdminBase(admin.ModelAdmin):pass
 

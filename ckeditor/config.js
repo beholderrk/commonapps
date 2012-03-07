@@ -9,7 +9,7 @@ CKEDITOR.editorConfig = function( config )
 	config.language = 'ru';
 //	config.uiColor = '#AADC6E';
     config.filebrowserBrowseUrl = '/admin/filebrowser/browse/?pop=3';
-    config.toolbar = 'Basic';
+    config.toolbar = 'kobe';
     config.toolbar_Basic =
     [
         [      'Undo', 'Redo',
@@ -27,6 +27,21 @@ CKEDITOR.editorConfig = function( config )
           '-', 'About'
         ]
     ];
+
+    config.toolbar_kobe =
+    [
+        [ 'Source','-','Preview','-','Templates' ],
+        [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ],
+        [ 'Find','Replace','-','SelectAll','-', 'Scayt' ],
+        [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ],
+        [ 'Maximize', 'ShowBlocks'],
+        [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl' ],
+        [ 'Link','Unlink','Anchor' ],
+        [ 'Image','Table','HorizontalRule','SpecialChar'],
+        [ 'Format','FontSize' ],
+        [ 'TextColor','BGColor' ]
+    ];
+
     config.width = 750;
 //    config.skin = 'v2';
     config.toolbarCanCollapse = true;

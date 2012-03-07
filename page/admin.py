@@ -51,7 +51,7 @@ else:
     class ActionAdminBase(FeinCMSModelAdmin):
         pass
 
-    class ActionInlineBase(admin.StackedInline):
+    class ActionInlineBase(admin.TabularInline):
         pass
 
     class PageAdminBase(admin.ModelAdmin):
@@ -71,7 +71,7 @@ class PageBlockInline(PageBlockInlineBase):
     fields = ['name', 'title']
     readonly_fields = ['title',]
 
-page_css = { 'screen': css_multilang.get('screen') + (settings.STATIC_URL + 'fancybox/jquery.fancybox.css',)}
+page_css = { 'screen': (css_multilang.get('screen') or ()) + (settings.STATIC_URL + 'fancybox/jquery.fancybox.css',)}
 
 class PageAdmin(PageAdminBase):
     """
