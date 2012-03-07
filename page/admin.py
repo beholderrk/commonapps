@@ -11,12 +11,9 @@ from django.conf import settings
 
 #register_seo_admin(admin.site, SEOMetadata)
 
-try:
-    MULTILANGUAGE =  settings.PAGE_MULTILANGUAGE
-except Exception as e:
-    MULTILANGUAGE = False
+MODELTRANSLATION = 'modeltranslation' in settings.INSTALLED_APPS
 
-if MULTILANGUAGE:
+if MODELTRANSLATION:
 
     js_multilang = (
         settings.STATIC_URL + 'modeltranslation/js/force_jquery.js',
@@ -30,7 +27,7 @@ else:
     js_multilang = ()
     css_multilang = {}
 
-if MULTILANGUAGE:
+if MODELTRANSLATION:
     from modeltranslation.admin import TranslationAdmin, TranslationTabularInline, TranslationStackedInline
 
     class ActionAdminBase(FeinCMSModelAdmin, TranslationAdmin):
