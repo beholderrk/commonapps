@@ -9,7 +9,7 @@
  * Copyright 2011 Janis Skarnelis - janis@fancyapps.com
  *
  */
- var jQuery = django.jQuery || jQuery || $;
+var jQuery = django.jQuery || jQuery || $;
 
 (function (window, document, $) {
 	var W = $(window),
