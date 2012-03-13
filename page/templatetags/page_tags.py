@@ -17,7 +17,7 @@ def get_action_link(action):
         reverse_data = bits[1]
         try:
             reverse_data = json.loads(reverse_data)
-            action.link = reverse(reverse_data[0], None, args=reverse_data[1], kwargs=reverse_data[2])
+            action.link = reverse(reverse_data[0], args=reverse_data[1], kwargs=reverse_data[2])
         except Exception:
             action.link = '#'
     return action
