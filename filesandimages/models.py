@@ -14,6 +14,7 @@ class AttachedImage(models.Model):
     title = models.CharField(max_length=250, verbose_name=u'название', null=True, blank=True)
 
     class Meta:
+        ordering = ('position',)
         verbose_name = u'объект - Прикрепленное изображение'
         verbose_name_plural = u'Прикрепленные изображения'
 
@@ -26,5 +27,6 @@ class AttachedFile(models.Model):
     title = models.CharField(max_length=250, verbose_name=u'название')
 
     class Meta:
+        ordering = ('position',)
         verbose_name = u'объект - Прикрепленный файл'
         verbose_name_plural = u'Прикрепленные файлы'
