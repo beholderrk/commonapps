@@ -10,8 +10,9 @@ def page_view(request, slug, template_name="page/page.html"):
     """Displays page with passed slug
     """
     page = get_object_or_404(Page, slug=slug)
+    parts = page.pages_containing.filter(active = True)
     if request.user.is_superuser or page.active:
-        return { 'TEMPLATE': template_name, 'page': page }
+        return { 'TEMPLATE': template_name, 'page': page, 'parts': parts }
     raise Http404('No %s matches the given query.' % page._meta.object_name)
 
 
