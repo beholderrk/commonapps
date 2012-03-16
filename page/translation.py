@@ -11,7 +11,7 @@ if 'modeltranslation' in settings.INSTALLED_APPS:
     translator.register(Action, ActionTranslationOptions)
 
     class PageAdminTranslationOptions(TranslationOptions):
-        fields=('title',)
+        fields=('title', 'body', 'short_text')
 
     translator.register(Page, PageAdminTranslationOptions)
 

@@ -65,7 +65,7 @@ class PageBlockInline(PageBlockInlineBase):
     model = PageBlock
     extra = 0
     template = "admin/page/tabular.html"
-    fields = ['name', 'title']
+    fields = ['name', 'title', 'active', 'position']
     readonly_fields = ['title',]
 
 page_css = { 'screen': (css_multilang.get('screen') or ()) + (settings.STATIC_URL + 'fancybox/jquery.fancybox.css',)}
@@ -76,6 +76,9 @@ class PageAdmin(PageAdminBase):
     prepopulated_fields = prepopulated_fields = {"slug": ("title",)}
     inlines = [PageBlockInline]
 #    exclude = ['page_blocks']
+    formfield_overrides = {
+        models.TextField: {'widget':forms.Textarea(attrs={'class':'ckeditor'})}
+    }
 
     class Media:
         js = js_multilang  + (settings.MEDIA_URL + 'ckeditor/ckeditor.js',

@@ -86,16 +86,16 @@ class Page(models.Model):
             ("page/page.html", u"Текстовая страница"),
         )
 
-    title = models.CharField(_(u"Title"), max_length=100)
+    title = models.CharField(_(u"заголовок"), max_length=100)
     slug = models.CharField(_(u"Slug"), max_length=100, unique=True)
-    template_name = models.CharField(_(u"Template"), choices=TEMPLATE_CHOISES, max_length=300)
-    active = models.BooleanField(_(u"Active"), default=True)
-    exclude_from_navigation = models.BooleanField(_(u"Exclude from navigation"), default=False)
-    position = models.IntegerField(_(u"Position"), default=999)
+    template_name = models.CharField(_(u"Шаблон"), choices=TEMPLATE_CHOISES, max_length=300, default=TEMPLATE_CHOISES[0])
+    active = models.BooleanField(_(u"опубликовать"), default=True)
+    exclude_from_navigation = models.BooleanField(_(u"исключить из навигации"), default=False)
+    position = models.IntegerField(_(u"позиция"), default=999)
 #    page_blocks = models.ManyToManyField('PageBlock', related_name='pages_containing')
 
-#    short_text = models.TextField(blank=True,)
-#    body = models.TextField(_(u"Text"), blank=True,)
+    body = models.TextField(_(u"текст"), blank=True,)
+    short_text = models.TextField(_(u"краткое содержание"), blank=True,)
 #    file = models.FileField(_(u"File"), blank=True, upload_to="files")
     
     class Meta: 
@@ -128,7 +128,7 @@ class PagesSitemap(Sitemap):
 class PageBlock(models.Model):
     """Block for text page may contain text fields, images or files"""
     name = models.CharField(_(u'block name'), max_length=250)
-    title = models.TextField(_(u'block title'), blank=True)
+    title = models.CharField(_(u'block title'), blank=True, max_length=400)
     body = models.TextField(_(u'block body'), blank=True)
     link = models.CharField(_(u'block link'), blank=True, max_length=500)
     images = generic.GenericRelation(AttachedImage, verbose_name=_(u'block images'),
