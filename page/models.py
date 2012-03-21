@@ -105,10 +105,10 @@ class Page(models.Model):
         
     def __unicode__(self):
         return self.title
-    
+
+    @models.permalink
     def get_absolute_url(self):
-        return ("page_view", (), {"slug" : self.slug})
-    get_absolute_url = models.permalink(get_absolute_url)
+        return "page_view", (), {"slug" : self.slug}
 
     def save(self, force_insert=False, force_update=False, *args, **kw):
         super(Page, self).save(*args, **kw)
