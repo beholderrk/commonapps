@@ -1,0 +1,6 @@
+{% extends 'gblocks/gblock_base.html' %}
+{% load i18n %}
+
+{% block body %}
+    <a href="{{ object.link }}" title="{{ object.title }}" class="{{ object.class_name }}" target="_blank">{{ object.title }}</a>
+{%  endblock %}

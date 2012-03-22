@@ -1,0 +1,4 @@
+.inlineTextPart         {position:relative;}
+.inlineTextPart:hover   {background-color:#d5f2d5;}
+.inlineEditLink         {position:absolute; top:-6px; right:-3px; zoom:1; z-index:10001}
+.inlineEditLink img     {-webkit-border-radius: 0; -moz-border-radius: 0; -o-border-radius: 0; border-radius: 0;}

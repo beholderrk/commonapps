@@ -1,0 +1,5 @@
+{% load generic_flatblocks %}
+
+{% for social_link in social_links %}
+    {% gblock social_link.slug for 'gblocks.SocialLink' with 'gblocks/sociallink/flatblock.html' %}
+{% endfor %}

@@ -1,0 +1,47 @@
+{% extends 'gblocks/gblock_base.html' %}
+{% load i18n %}
+
+{% get_current_language as lan %}
+{% block body %}
+<script src="http://api-maps.yandex.ru/1.1/?key={{ object.get_yandex_api_key }}&modules=pmap&wizard=constructor&lang=en-US" type="text/javascript"></script>
+<script type="text/javascript">
+    YMaps.jQuery(window).load(function () {
+        var map = new YMaps.Map(YMaps.jQuery("#YMapsID-202")[0]);
+        map.setCenter(new YMaps.GeoPoint({{ object.get_coord_str }}), 14, YMaps.MapType.MAP);
+        map.addControl(new YMaps.Zoom());
+        map.addControl(new YMaps.ToolBar());
+        YMaps.MapType.PMAP.getName = function () { return "Народная"; };
+        map.addControl(new YMaps.TypeControl([
+            YMaps.MapType.MAP,
+            YMaps.MapType.SATELLITE,
+            YMaps.MapType.HYBRID,
+            YMaps.MapType.PMAP
+        ], [0, 1, 2, 3]));
+
+        YMaps.Styles.add("constructor#pmlbmPlacemark", {
+            iconStyle : {
+                href : "http://api-maps.yandex.ru/i/0.3/placemarks/pmlbm.png",
+                size : new YMaps.Point(28,29),
+                offset: new YMaps.Point(-8,-27)
+            }
+        });
+
+        map.addOverlay(createObject("Placemark", new YMaps.GeoPoint({{ object.get_coord_str }}), "constructor#pmlbmPlacemark", "{{ object.title }}"));
+
+        function createObject (type, point, style, description) {
+            var allowObjects = ["Placemark", "Polyline", "Polygon"],
+                    index = YMaps.jQuery.inArray( type, allowObjects),
+                    constructor = allowObjects[(index == -1) ? 0 : index];
+            description = description || "";
+
+            var object = new YMaps[constructor](point, {style: style, hasBalloon : !!description});
+            object.description = description;
+
+            return object;
+        }
+    });
+</script>
+
+<div id="YMapsID-202" style="width:450px;height:350px"></div>
+
+{% endblock %}

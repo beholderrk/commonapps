@@ -1,0 +1,6 @@
+{% extends 'gblocks/gblock_base.html' %}
+
+{% block body %}
+    <h1>{{ object.title }}</h1>
+    {{ object.text|safe }}
+{% endblock %}

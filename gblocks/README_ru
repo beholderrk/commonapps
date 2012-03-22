@@ -1,0 +1,6 @@
+
+При добавлении новой модели в models.py, нужно зарегистрировать ее в translation.py. Если никакие поля подели не нужно
+переводить, то fields=().
+
+Все нужные модели нужно указать в settings.py проекта
+    GBLOCKS_MODELS = ['Title', 'Text', 'TitleTextAndImage', 'Map', 'SocialLink']

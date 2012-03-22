@@ -1,0 +1,36 @@
+{% extends 'gblocks/gblock_base.html' %}
+{% load i18n %}
+
+
+{% block body %}
+    {% get_current_language as current_lang %}
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&language={{ current_lang }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var map_div = $('.objects_map');
+            var center = new google.maps.LatLng({{ object.location }});
+            var map = new google.maps.Map(map_div[0], {
+                center: center,
+                zoom: 12,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+
+            var marker = new google.maps.Marker({
+                position: new google.maps.LatLng({{ object.location }}),
+                map: map,
+                title: "{{ object.title }}"
+            });
+
+            var contentString = '{{ object.balloon_text|safe|linebreaks }}';
+
+            var infowindow = new google.maps.InfoWindow({
+                content: contentString
+            });
+
+            google.maps.event.addListener(marker, 'click', function() {
+                infowindow.open(map,marker);
+            });
+        });
+    </script>
+    <div class="objects_map" style="width: 400px; height: 300px;"></div>
+{% endblock %}
