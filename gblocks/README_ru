@@ -1,6 +1,27 @@
 
-При добавлении новой модели в models.py, нужно зарегистрировать ее в translation.py. Если никакие поля подели не нужно
-переводить, то fields=().
+При добавлении новой модели в models.py, нужно зарегистрировать ее в translation.py. 
+    
+    class BannerTranslationOptions(TranslationOptions):
+        fields=('title', 'text',)
+
+    translator.register(Banner, BannerTranslationOptions)
+
+Если никакие поля модели не нужно переводить, то fields=().
 
 Все нужные модели нужно указать в settings.py проекта
+    
     GBLOCKS_MODELS = ['Title', 'Text', 'TitleTextAndImage', 'Map', 'SocialLink']
+    
+Так же в settings.py проекта нужно указать социальные сети (css классы для них), 
+если в GBLOCKS_MODELS присутствует SocialLink. 
+    
+    SOCIAL_CHOICES = (
+        ('twitter', 'twitter'),
+        ('facebook', 'facebook'),
+        ('vkontakte', 'vkontakte'),
+    )
+    
+При отсутствии этой настройки css класс в модели SocialLink можно вводить вручную.
+
+
+
