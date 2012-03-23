@@ -24,7 +24,12 @@ class AttachedFile(models.Model):
     content = generic.GenericForeignKey(ct_field="content_type", fk_field="content_id")
     position = models.PositiveSmallIntegerField(u'позиция', default=999)
     file = models.FileField(upload_to='generic/files', verbose_name=u'прикрепленный файл')
-    title = models.CharField(max_length=250, verbose_name=u'название')
+    title = models.CharField(max_length=250, verbose_name=u'название', blank=True)
+
+    def save(self, force_insert=False, force_update=False, using=None, *args, **kw):
+        if not self.title:
+            self.title = self.file.name.split('/')[-1]
+        super(AttachedFile, self).save(*args, **kw)
 
     class Meta:
         ordering = ('position',)
