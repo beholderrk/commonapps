@@ -1,7 +1,12 @@
 .location_picker_map {
-  width: 400px;
-  height: 300px;
-  border: 1px solid black;
-  padding: 2px;
-  display: inline-block;
+    width: 400px;
+    height: 300px;
+    border: 1px solid black;
+    padding: 2px;
+    display: inline-block;
+}
+
+.location_picker_reset {
+    float: left;
+    clear: both;
 }
