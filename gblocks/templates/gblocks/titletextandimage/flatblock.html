@@ -1,7 +1,10 @@
-<h2>{{ object.title }}</h2>
+{% extends 'gblocks/gblock_base.html' %}
 
-<p><img src="{{ MEDIA_URL }}{{ object.image }}" alt=""/></p>
+{% block body %}
+    <h2>{{ object.title }}</h2>
 
-{{ object.text|safe }}
+    <p><img src="{{ MEDIA_URL }}{{ object.image }}" alt=""/></p>
 
-{% if admin_url %}<a href="{{ admin_url }}">edit</a>{% endif %}
+    {{ object.text|safe }}
+{%  endblock %}
+
