@@ -20,6 +20,12 @@ def get_action_link(action):
             action.link = reverse(reverse_data[0], args=reverse_data[1], kwargs=reverse_data[2])
         except Exception:
             action.link = '#'
+    elif len(bits) == 1:
+        try:
+            view, args, kwargs =  resolve(bits[0])
+            action.link = reverse(view, args=args, kwargs=kwargs)
+        except Exception:
+            action.link = '#'
     return action
 
 def is_selected(action, request):

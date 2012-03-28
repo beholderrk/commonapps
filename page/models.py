@@ -71,6 +71,11 @@ class Action(MPTTModel):
     def save(self, *args, **kwargs):
         if self.page:
             self.link = reverse('page_view', None, (), {'slug': self.page.slug})
+            try:
+                from localeurl.utils import strip_path
+                self.link = strip_path(self.link)[1]
+            except Exception:
+                pass
             self.title = self.page.title
         super(Action, self).save(*args, **kwargs)
 
