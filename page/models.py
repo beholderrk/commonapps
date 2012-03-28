@@ -3,12 +3,13 @@
 from django.contrib.sitemaps import Sitemap, ping_google
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse, resolve
+from django.core.urlresolvers import reverse, resolve, Resolver404
 from django.conf import settings
 from django.contrib.contenttypes import generic
 
 from mptt.models import MPTTModel
 from filesandimages.models import AttachedImage, AttachedFile
+from urlparse import urlparse
 
 class ActionGroup(models.Model):
     """Actions of a action group can be displayed on several parts of the web
@@ -142,7 +143,7 @@ class PageBlock(models.Model):
         object_id_field="content_id", content_type_field="content_type")
     position = models.IntegerField(_(u'Position'), default=999)
     active = models.BooleanField(_(u'Active'), default=True)
-    page = models.ForeignKey(Page, verbose_name=_(u'Page'), blank=True, null=True, related_name='pages_containing')
+    page = models.ForeignKey(Page, verbose_name=_(u'Page'), blank=True, null=True, related_name='page_blocks')
 
     class Meta:
         ordering = ("position", )
@@ -151,3 +152,33 @@ class PageBlock(models.Model):
 
     def __unicode__(self):
         return '%s - %s' % (self.page.title, self.name)
+
+    def save(self, force_insert=False, force_update=False, *args, **kw):
+        if self.link:
+            # внутрення ссылка сохраняется без локали, как относительная
+            link = urlparse(self.link)
+            path = link.path + ('#' + link.fragment if link.fragment else '') + ('?' + link.query if link.query else '')
+            try:
+                # удаление локали
+                try:
+                    from localeurl.utils import strip_path
+                    path = strip_path(path)[1]
+                except Exception:
+                    pass
+                # проверка является ли ссылка внутренней
+                view, args, kwargs = resolve(path)
+                self.link = path
+            except Resolver404:
+                pass
+        super(PageBlock, self).save(*args, **kw)
+
+    def get_link(self):
+        # внутренние ссылки получаются через revers (для правильной локали)
+        try:
+            view, args, kwargs = resolve(self.link)
+            return reverse(view, args=args, kwargs=kwargs)
+        except Resolver404:
+            return self.link
+
+
+
