@@ -87,3 +87,8 @@ def menu_has_selected(value):
             return True
     return False
 
+@register.filter
+def fixlocale(value):
+    # внутренние ссылки получаются через revers (для правильной локали)
+    return clear_internal_url(value, return_reverse=True)
+

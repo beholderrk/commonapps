@@ -9,7 +9,7 @@ from django.contrib.contenttypes import generic
 
 from mptt.models import MPTTModel
 from filesandimages.models import AttachedImage, AttachedFile
-from urlparse import urlparse
+from utils import locale_strip_path, clear_internal_url
 
 class ActionGroup(models.Model):
     """Actions of a action group can be displayed on several parts of the web
@@ -71,12 +71,7 @@ class Action(MPTTModel):
 
     def save(self, *args, **kwargs):
         if self.page:
-            self.link = reverse('page_view', None, (), {'slug': self.page.slug})
-            try:
-                from localeurl.utils import strip_path
-                self.link = strip_path(self.link)[1]
-            except Exception:
-                pass
+            self.link = locale_strip_path(reverse('page_view', None, (), {'slug': self.page.slug}))[1]
             self.title = self.page.title
         super(Action, self).save(*args, **kwargs)
 
@@ -155,30 +150,10 @@ class PageBlock(models.Model):
 
     def save(self, force_insert=False, force_update=False, *args, **kw):
         if self.link:
-            # внутрення ссылка сохраняется без локали, как относительная
-            link = urlparse(self.link)
-            path = link.path + ('#' + link.fragment if link.fragment else '') + ('?' + link.query if link.query else '')
-            try:
-                # удаление локали
-                try:
-                    from localeurl.utils import strip_path
-                    path = strip_path(path)[1]
-                except Exception:
-                    pass
-                # проверка является ли ссылка внутренней
-                view, args, kwargs = resolve(path)
-                self.link = path
-            except Resolver404:
-                pass
+            self.link = clear_internal_url(self.link)
         super(PageBlock, self).save(*args, **kw)
 
-    def get_link(self):
-        # внутренние ссылки получаются через revers (для правильной локали)
-        try:
-            view, args, kwargs = resolve(self.link)
-            return reverse(view, args=args, kwargs=kwargs)
-        except Resolver404:
-            return self.link
+
 
 
 
