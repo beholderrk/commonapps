@@ -45,6 +45,11 @@ if 'modeltranslation' in settings.INSTALLED_APPS:
 
     translator.register(SocialLink, SocialLinkTranslationOptions)
 
+    class CustomBlockTranslationOptions(TranslationOptions):
+        fields=()
+
+    translator.register(CustomBlock, CustomBlockTranslationOptions)
+
 
 
 

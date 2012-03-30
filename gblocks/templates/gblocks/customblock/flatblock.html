@@ -1,0 +1,21 @@
+{% extends 'gblocks/gblock_base.html' %}
+
+{% block body %}
+    {% for simple_text in object.simple_texts.all %}
+        <p>{{ simple_text.text }}</p>
+    {% endfor %}
+    {% for rich_text in object.rich_texts.all %}
+        <p>{{ rich_text.text|safe }}</p>
+    {% endfor %}
+    {% for link in object.links.all %}
+        <a href="{{ link.link }}">{{ link.title }}</a>
+    {% endfor %}
+
+
+    {% for image in object.images.all %}
+        <img src="{{ MEDIA_URL }}{{ image.image }}" alt=""/>
+    {% endfor %}
+    {% for file in object.files.all %}
+        <a href="{{ file.file.url }}">{{ file.title }}</a>
+    {% endfor %}
+{%  endblock %}

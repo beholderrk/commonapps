@@ -6,6 +6,8 @@ from sorl.thumbnail.admin import AdminImageMixin
 from django.conf import settings
 from django import forms
 from gblocks import models as gblocks_models
+from generic_content.admin import AttachedSimpleTextInline, AttachedRichTextInline, AttachedLinkInline
+from filesandimages.admin import AttachedFileInline, AttachedImageInline
 
 MODELTRANSLATION = 'modeltranslation' in settings.INSTALLED_APPS
 
@@ -37,15 +39,16 @@ class AbstractAdmin(AdminImageMixin, AdminBase):
         js = js_base +  (settings.MEDIA_URL + 'ckeditor/ckeditor.js',)
         css = css_base
 
-#admin.site.register(Title, AbstractAdmin)
-#admin.site.register(Text, AbstractAdmin)
-##admin.site.register(Image, AbstractAdmin)
-#admin.site.register(getattr(gblocks_models, 'Image'), AbstractAdmin)
-##admin.site.register(TitleAndText, AbstractAdmin)
-#admin.site.register(TitleTextAndImage, AbstractAdmin)
-#admin.site.register(Map, AbstractAdmin)
-##admin.site.register(Banner, AbstractAdmin)
-##admin.site.register(TitleTextAndClass, AbstractAdmin)
 
 for gblocks_models_item in settings.GBLOCKS_MODELS:
     admin.site.register(getattr(gblocks_models, gblocks_models_item), AbstractAdmin)
+
+class CustomBlockAdmin(AdminBase):
+    inlines = [AttachedSimpleTextInline, AttachedRichTextInline, AttachedLinkInline,
+               AttachedFileInline, AttachedImageInline]
+
+    class Media:
+        js = js_base +  (settings.MEDIA_URL + 'ckeditor/ckeditor.js',settings.MEDIA_URL + 'fancybox/jquery.fancybox.pack.js',)
+        css = css_base
+
+admin.site.register(CustomBlock, CustomBlockAdmin)

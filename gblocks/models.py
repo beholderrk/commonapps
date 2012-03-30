@@ -6,6 +6,11 @@ from locationpicker.widgets import LocationFieldYandex, LocationFieldGoogle
 from django.conf import settings
 from django_generic_flatblocks.models import GenericFlatblock
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
+
+from filesandimages.models import AttachedFile, AttachedImage
+from generic_content.models import AttachedSimpleText, AttachedRichText, AttachedLink
+
 
 class Title(models.Model):
     title = models.CharField(_('title'), max_length=255, blank=True)
@@ -85,3 +90,21 @@ class SocialLink(models.Model):
 
     def __unicode__(self):
         return '(SocialLink) %s' % self.class_name
+
+
+class CustomBlock(models.Model):
+    images = generic.GenericRelation(AttachedImage, verbose_name=_(u'изображения'),
+        object_id_field="content_id", content_type_field="content_type")
+    files = generic.GenericRelation(AttachedFile, verbose_name=_(u'файлы'), object_id_field="content_id",
+        content_type_field="content_type")
+    simple_texts = generic.GenericRelation(AttachedSimpleText, object_id_field="content_id",
+        content_type_field="content_type")
+    rich_texts = generic.GenericRelation(AttachedRichText, object_id_field="content_id",
+        content_type_field="content_type")
+    links = generic.GenericRelation(AttachedLink, object_id_field="content_id",
+        content_type_field="content_type")
+
+    def __unicode__(self):
+        content_type = ContentType.objects.get_for_model(self)
+        flatblock = GenericFlatblock.objects.get(object_id=self.pk, content_type = content_type)
+        return '(CustomBlock - %s)' % flatblock.slug
