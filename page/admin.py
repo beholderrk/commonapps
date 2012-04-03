@@ -2,14 +2,10 @@
 from django.contrib import admin
 from django import forms
 from django.db import models
-from rollyourown.seo.admin import register_seo_admin, get_inline
 from page.models import *
-#from page.seo import SEOMetadata
 from mptt.admin import FeinCMSModelAdmin
 from filesandimages.admin import AttachedImageInline, AttachedFileInline
 from django.conf import settings
-
-#register_seo_admin(admin.site, SEOMetadata)
 
 MODELTRANSLATION = 'modeltranslation' in settings.INSTALLED_APPS
 
@@ -85,6 +81,12 @@ class PageAdmin(PageAdminBase):
                               settings.STATIC_URL + 'fancybox/jquery.fancybox.pack.js',
                               settings.STATIC_URL + 'js/page_edit_form.js',)
         css = page_css
+
+if getattr(settings, 'PAGE_SEO_MODULE', False):
+    from rollyourown.seo.admin import get_inline
+    from django.utils.importlib import import_module
+    seomodule = import_module(getattr(settings, 'PAGE_SEO_MODULE'))
+    PageAdmin.inlines += [get_inline(seomodule.SEOMetadata)]
     
 admin.site.register(Page, PageAdmin)
 
@@ -123,3 +125,4 @@ class ActionAdmin(ActionAdminBase):
         css = css_multilang
 
 admin.site.register(Action, ActionAdmin)
+
