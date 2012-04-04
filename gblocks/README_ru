@@ -23,5 +23,16 @@
     
 При отсутствии этой настройки css класс в модели SocialLink можно вводить вручную.
 
+----------------------------------------------------------------------------------
+Для использования CustomBlock, нужны приложения generic_content, filesandimages и
+django_generic_flatblocks с расширенным тегом gblock.
+
+В расширенном теге gblock можно указывать инлайны которые должны отображаться при 
+редактировании CustomBlock в админке.
+
+{% gblock 'video_block' for 'gblocks.CustomBlock' visible_inlines  'AttachedSimpleTextInline,AttachedRichTextInline,AttachedLinkInline' %}
+
+
+
 
 
