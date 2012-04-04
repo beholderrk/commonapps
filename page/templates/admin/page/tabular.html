@@ -44,7 +44,7 @@
             {% for field in line %}
               <td class="{{ field.field.name }}">
               {% if field.is_readonly %}
-                  <a class="open_window fancybox.iframe" href="{% url admin:page_pageblock_change field.form.instance.pk %}?_popup=1">редактировать {{ field.contents }}</a>
+                  {% if inline_admin_form.original %}<a class="open_window fancybox.iframe" href="{% url admin:page_pageblock_change field.form.instance.pk %}?_popup=1">редактировать {{ field.contents }}</a>{% endif %}
               {% else %}
                   {{ field.field.errors.as_ul }}
                   {{ field.field }}
