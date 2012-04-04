@@ -34,6 +34,9 @@ django_generic_flatblocks с расширенным тегом gblock.
 
 Если параметр visible_inlines опущен, отображаются все инлайны. 
 
+При добавлении новой generic модели в CustomBlock, ее inline надо также добавить в
+метод change_view класса CustomBlockAdmin в admin.py.  
+
 
 
 
