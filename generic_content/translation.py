@@ -20,4 +20,9 @@ if 'modeltranslation' in settings.INSTALLED_APPS:
 
     translator.register(AttachedLink, AttachedLinkTranslationOptions)
 
+    class AttachedYoutubeVideoTranslationOptions(TranslationOptions):
+        fields=('title', 'description')
+
+    translator.register(AttachedYoutubeVideo, AttachedYoutubeVideoTranslationOptions)
+
 
