@@ -6,8 +6,11 @@ from sorl.thumbnail.admin import AdminImageMixin
 from django.conf import settings
 from django import forms
 from gblocks import models as gblocks_models
-from generic_content.admin import AttachedSimpleTextInline, AttachedRichTextInline, AttachedLinkInline
+from generic_content.admin import AttachedSimpleTextInline, AttachedRichTextInline, AttachedLinkInline, \
+    AttachedYoutubeVideoInline
 from filesandimages.admin import AttachedFileInline, AttachedImageInline
+import generic_content.admin as generic_content_admin
+import filesandimages.admin as filesandimages_admin
 
 MODELTRANSLATION = 'modeltranslation' in settings.INSTALLED_APPS
 
@@ -45,10 +48,33 @@ for gblocks_models_item in settings.GBLOCKS_MODELS:
 
 class CustomBlockAdmin(AdminBase):
     inlines = [AttachedSimpleTextInline, AttachedRichTextInline, AttachedLinkInline,
-               AttachedFileInline, AttachedImageInline]
+        AttachedImageInline, AttachedFileInline, AttachedYoutubeVideoInline]
+    exclude = ('visible_inlines',)
+
+    def change_view(self, request, object_id, extra_context=None):
+        current_object = self.get_object(request, object_id)
+
+        if current_object.visible_inlines:
+            self.inline_instances = []
+            for visible_inline in current_object.visible_inlines.split(','):
+                inline_class = getattr(generic_content_admin, visible_inline, None) or getattr(filesandimages_admin, visible_inline, None)
+                if inline_class:
+                    self.inline_instances.append(inline_class(self.model, self.admin_site))
+        else:
+            self.inline_instances = [AttachedSimpleTextInline(self.model, self.admin_site),
+                                     AttachedRichTextInline(self.model, self.admin_site),
+                                     AttachedLinkInline(self.model, self.admin_site),
+                                     AttachedImageInline(self.model, self.admin_site),
+                                     AttachedFileInline(self.model, self.admin_site),
+                                     AttachedYoutubeVideoInline(self.model, self.admin_site)]
+
+        return super(CustomBlockAdmin, self).change_view(request, object_id, extra_context=None)
 
     class Media:
-        js = js_base +  (settings.MEDIA_URL + 'ckeditor/ckeditor.js',settings.MEDIA_URL + 'fancybox/jquery.fancybox.pack.js',)
-        css = css_base
+        js = js_base +  (settings.MEDIA_URL + 'ckeditor/ckeditor.js',
+                         settings.MEDIA_URL + 'fancybox/jquery.fancybox.pack.js',
+                         settings.STATIC_URL + 'js/page_edit_form.js',)
+#        css = { 'screen': (css_base.get('screen') or ()) + (settings.STATIC_URL + 'fancybox/jquery.fancybox.css',)}
+        css = { 'screen': (settings.STATIC_URL + 'fancybox/jquery.fancybox.css',)}
 
 admin.site.register(CustomBlock, CustomBlockAdmin)

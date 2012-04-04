@@ -9,7 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
 from filesandimages.models import AttachedFile, AttachedImage
-from generic_content.models import AttachedSimpleText, AttachedRichText, AttachedLink
+from generic_content.models import AttachedSimpleText, AttachedRichText, AttachedLink, AttachedYoutubeVideo
 
 
 class Title(models.Model):
@@ -103,6 +103,10 @@ class CustomBlock(models.Model):
         content_type_field="content_type")
     links = generic.GenericRelation(AttachedLink, object_id_field="content_id",
         content_type_field="content_type")
+    videos = generic.GenericRelation(AttachedYoutubeVideo, object_id_field="content_id",
+        content_type_field="content_type")
+
+    visible_inlines = models.TextField(blank=True)
 
     def __unicode__(self):
         content_type = ContentType.objects.get_for_model(self)
