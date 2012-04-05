@@ -73,7 +73,7 @@ class GenericFlatblockNode(Node):
             related_object = related_model._default_manager.create()
             generic_object = GenericFlatblock._default_manager.create(slug=slug, content_object=related_object)
 
-        if hasattr(related_object, 'visible_inlines') and self.visible_inlines != related_object.visible_inlines:
+        if hasattr(related_object, 'visible_inlines') and self.visible_inlines and  self.visible_inlines != related_object.visible_inlines:
             related_object.visible_inlines = self.visible_inlines.strip('\'"')
             related_object.save()
         return generic_object, related_object
