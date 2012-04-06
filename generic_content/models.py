@@ -5,6 +5,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from utils import clear_internal_url
 from urlparse import parse_qs
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
 
 class AbstractAttachedBlock(models.Model):
     class Meta:
@@ -71,12 +73,20 @@ class AttachedLink(AbstractAttachedBlock):
         self.link = clear_internal_url(self.link)
         super(AttachedLink, self).save(*args, **kwargs)
 
+
+def youtube_validator(value):
+    qs = value.split('?')
+    try:
+        parse_qs(qs[1])['v']
+    except Exception:
+        raise ValidationError(_(u'ссылка не является ссылкой на видео'))
+
 class AttachedYoutubeVideo(AbstractAttachedBlock):
     name = models.CharField(u'название блока', max_length=100)
     position = models.PositiveSmallIntegerField(u'позиция', default=999)
     title = models.CharField(u'название видео', max_length=300, blank=True)
     description = models.TextField(u'описание видео', blank=True)
-    link = models.URLField(u'ссылка', help_text=u'ссылка на видео с Youtube.com', blank=True)
+    link = models.URLField(u'ссылка', help_text=u'ссылка на видео с Youtube.com', blank=True, validators=[youtube_validator])
 
     content_type = models.ForeignKey(ContentType, verbose_name=u'тип контента', related_name='videos', blank=True, null=True)
     content_id = models.PositiveIntegerField(u'id контента', blank=True, null=True)
@@ -90,11 +100,21 @@ class AttachedYoutubeVideo(AbstractAttachedBlock):
         verbose_name = u'объект - Прикрепленное видео'
         verbose_name_plural = u'Прикрепленные видео'
 
-    def thumbnail(self):
+    def save(self, *args, **kwargs):
         if self.link:
             qs = self.link.split('?')
-            video_id = parse_qs(qs[1])['v'][0]
-            return '<img src="http://img.youtube.com/vi/%s/0.jpg" >' % video_id
+            video_id = parse_qs(qs[1])['v']
+            self.link = qs[0] + '?v=' + video_id[0]
+        super(AttachedYoutubeVideo, self).save(*args, **kwargs)
+
+    def thumbnail(self):
+        if self.link:
+            try:
+                qs = self.link.split('?')
+                video_id = parse_qs(qs[1])['v'][0]
+                return '<img src="http://img.youtube.com/vi/%s/0.jpg" >' % video_id
+            except Exception:
+                return None
         else:
             return None
     thumbnail.short_description = u'скриншот видео'
