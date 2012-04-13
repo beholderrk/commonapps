@@ -6,12 +6,12 @@ if 'modeltranslation' in settings.INSTALLED_APPS:
     from models import *
 
     class AttachedSimpleTextTranslationOptions(TranslationOptions):
-        fields=('text',)
+        fields=('title', 'text',)
 
     translator.register(AttachedSimpleText, AttachedSimpleTextTranslationOptions)
 
     class AttachedRichTextTranslationOptions(TranslationOptions):
-        fields=('text',)
+        fields=('title', 'text',)
 
     translator.register(AttachedRichText, AttachedRichTextTranslationOptions)
 

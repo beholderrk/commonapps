@@ -11,7 +11,7 @@ MODELTRANSLATION = 'modeltranslation' in settings.INSTALLED_APPS
 if MODELTRANSLATION:
     from modeltranslation.admin import TranslationStackedInline, TranslationAdmin, TranslationGenericTabularInline
 
-    class AdminBaseInline(generic.GenericTabularInline): pass
+    class AdminBaseInline(TranslationGenericTabularInline): pass
     class AdminBase(TranslationAdmin): pass
     js_base = settings.JS_MULTILANG
     css_base = settings.CSS_MULTILANG
@@ -24,7 +24,7 @@ else:
 class AbstractAttachedBlockInline(AdminBaseInline):
     ct_field = 'content_type'
     ct_fk_field = 'content_id'
-    extra = 0
+    extra = 1
     template = 'admin/page/tabular_for_gc.html'
 
     def get_readonly_fields(self, request, obj=None):
@@ -53,7 +53,7 @@ class AttachedYoutubeVideoInline(AbstractAttachedBlockInline):
 
 
 class AttachedSimpleTextAdmin(AdminBase):
-    fields = ('text', 'position',)
+    fields = ('name','title', 'text', 'position',)
 
     class Media:
         js = js_base
@@ -62,7 +62,7 @@ class AttachedSimpleTextAdmin(AdminBase):
 admin.site.register(AttachedSimpleText, AttachedSimpleTextAdmin)
 
 class AttachedRichTextAdmin(AdminBase):
-    fields = ('text', 'position',)
+    fields = ('name','title', 'text', 'position',)
     formfield_overrides = {models.TextField: {'widget':forms.Textarea(attrs={'class':'ckeditor'})}}
 
     class Media:
@@ -72,7 +72,7 @@ class AttachedRichTextAdmin(AdminBase):
 admin.site.register(AttachedRichText, AttachedRichTextAdmin)
 
 class AttachedLinkAdmin(AdminBase):
-    fields = ('name', 'title', 'link', 'position',)
+    fields = ('name', 'title', 'link', 'css_class', 'position',)
 
     class Media:
         js = js_base

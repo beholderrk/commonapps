@@ -22,6 +22,7 @@ class AbstractAttachedBlock(models.Model):
 class AttachedSimpleText(AbstractAttachedBlock):
     name = models.CharField(u'название блока', max_length=100)
     position = models.PositiveSmallIntegerField(u'позиция', default=999)
+    title = models.CharField(u'заголовок блока', max_length=300, blank=True)
     text = models.TextField(u'текстовый блок', blank=True)
 
     content_type = models.ForeignKey(ContentType, verbose_name=u'тип контента', related_name='simple_texts', blank=True, null=True)
@@ -37,6 +38,7 @@ class AttachedSimpleText(AbstractAttachedBlock):
 class AttachedRichText(AbstractAttachedBlock):
     name = models.CharField(u'название блока', max_length=100)
     position = models.PositiveSmallIntegerField(u'позиция', default=999)
+    title = models.CharField(u'заголовок блока', max_length=300, blank=True)
     text = models.TextField(u'текстовый блок')
 
     content_type = models.ForeignKey(ContentType, verbose_name=u'тип контента', related_name='rich_texts', blank=True, null=True)
@@ -59,6 +61,7 @@ class AttachedLink(AbstractAttachedBlock):
     position = models.PositiveSmallIntegerField(u'позиция', default=999)
     title = models.CharField(u'текст ссылки', max_length=300, blank=True)
     link = models.CharField(u'ссылка', max_length=300)
+    css_class = models.CharField(u'класс CSS', max_length=100, blank=True)
 
     content_type = models.ForeignKey(ContentType, verbose_name=u'тип контента', related_name='links', blank=True, null=True)
     content_id = models.PositiveIntegerField(u'id контента', blank=True, null=True)
