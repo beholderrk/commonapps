@@ -119,6 +119,7 @@ class ActionAdmin(ActionAdminBase):
     list_filter = ('group',)
     list_display = ('__unicode__', 'active', 'group',)
     list_editable = ('active', 'group',)
+    inlines = (AttachedImageInline,)
 
     class Media:
         js = js_multilang
