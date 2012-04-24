@@ -21,3 +21,7 @@ class Settings(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    def get_value(cls, setting):
+        return cls.objects.get(code = setting['code']).value
