@@ -71,10 +71,7 @@ class CustomBlockAdmin(AdminBase):
         return super(CustomBlockAdmin, self).change_view(request, object_id, extra_context=None)
 
     class Media:
-        js = js_base +  (settings.MEDIA_URL + 'ckeditor/ckeditor.js',
-                         settings.MEDIA_URL + 'fancybox/jquery.fancybox.pack.js',
-                         settings.STATIC_URL + 'js/page_edit_form.js',)
-#        css = { 'screen': (css_base.get('screen') or ()) + (settings.STATIC_URL + 'fancybox/jquery.fancybox.css',)}
-        css = { 'screen': (settings.STATIC_URL + 'fancybox/jquery.fancybox.css',)}
+        js = js_base
+        css = css_base
 
 admin.site.register(CustomBlock, CustomBlockAdmin)
