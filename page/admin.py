@@ -83,10 +83,19 @@ class PageAdmin(PageAdminBase):
         css = page_css
 
 if getattr(settings, 'PAGE_SEO_MODULE', False):
-    from rollyourown.seo.admin import get_inline
+    from rollyourown.seo.admin import get_inline, MetadataFormset
     from django.utils.importlib import import_module
     seomodule = import_module(getattr(settings, 'PAGE_SEO_MODULE'))
-    PageAdmin.inlines += [get_inline(seomodule.SEOMetadata)]
+    attrs = {
+        'max_num': len(settings.LANGUAGES),
+        'extra': 1,
+        'model': seomodule.SEOMetadata._meta.get_model('modelinstance'),
+        'ct_field': "_content_type",
+        'ct_fk_field': "_object_id",
+        'formset': MetadataFormset,
+        }
+    get_inline_inst = type('MetadataInline', (generic.GenericStackedInline,), attrs)
+    PageAdmin.inlines += [get_inline_inst]
     
 admin.site.register(Page, PageAdmin)
 
@@ -119,6 +128,7 @@ class ActionAdmin(ActionAdminBase):
     list_filter = ('group',)
     list_display = ('__unicode__', 'active', 'group',)
     list_editable = ('active', 'group',)
+    inlines = (AttachedImageInline,)
 
     class Media:
         js = js_multilang

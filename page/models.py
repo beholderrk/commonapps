@@ -60,6 +60,8 @@ class Action(MPTTModel):
     position = models.IntegerField(_(u"Position"), default=999)
     parent = models.ForeignKey("self", verbose_name=_(u"Parent"), blank=True, null=True)
     page = models.ForeignKey('Page', verbose_name=_(u'Page'), related_name='actions', blank=True, null=True)
+    images = generic.GenericRelation(AttachedImage, verbose_name=_(u'action images'),
+        object_id_field="content_id", content_type_field="content_type")
 
     def __unicode__(self):
         return '%s - %s' % (self.group.name, self.title)

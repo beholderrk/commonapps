@@ -78,6 +78,13 @@ def current_action(context):
         action = get_action_link(action)
         if request.path.find(action.link) != -1:
             context['current_action'] = action
+            context['current_action_siblings'] = action.get_siblings(include_self=True).filter(active=True)
+            for action_item in context['current_action_siblings']:
+                action_item = get_action_link(action_item)
+            current_action_children = action.get_children().filter(active=True)
+            context['current_action_children'] = action.get_children().filter(active=True)
+            for action_item in context['current_action_children']:
+                action_item = get_action_link(action_item)
     return {}
 
 @register.filter
