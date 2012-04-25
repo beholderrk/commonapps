@@ -2,53 +2,80 @@
 from django.conf import settings
 
 if 'modeltranslation' in settings.INSTALLED_APPS:
-    from modeltranslation.translator import translator, TranslationOptions
+    from modeltranslation.translator import translator, TranslationOptions, AlreadyRegistered
     from models import *
 
     class TitleTranslationOptions(TranslationOptions):
         fields=('title',)
 
-    translator.register(Title, TitleTranslationOptions)
+    try:
+        translator.register(Title, TitleTranslationOptions)
+    except AlreadyRegistered:
+        pass
 
     class TextTranslationOptions(TranslationOptions):
         fields=('text',)
 
-    translator.register(Text, TextTranslationOptions)
+    try:
+        translator.register(Text, TextTranslationOptions)
+    except AlreadyRegistered:
+        pass
 
     class TitleTextAndImageTranslationOptions(TranslationOptions):
         fields=('title', 'text',)
 
-    translator.register(TitleTextAndImage, TitleTextAndImageTranslationOptions)
+    try:
+        translator.register(TitleTextAndImage, TitleTextAndImageTranslationOptions)
+    except AlreadyRegistered:
+        pass
 
     class MapTranslationOptions(TranslationOptions):
         fields=('title','balloon_text',)
 
-    translator.register(Map, MapTranslationOptions)
+    try:
+        translator.register(Map, MapTranslationOptions)
+    except AlreadyRegistered:
+        pass
 
     class ImageTranslationOptions(TranslationOptions):
         fields=()
 
-    translator.register(Image, ImageTranslationOptions)
+    try:
+        translator.register(Image, ImageTranslationOptions)
+    except AlreadyRegistered:
+        pass
 
     class BannerTranslationOptions(TranslationOptions):
         fields=('title', 'text',)
 
-    translator.register(Banner, BannerTranslationOptions)
+    try:
+        translator.register(Banner, BannerTranslationOptions)
+    except AlreadyRegistered:
+        pass
 
     class TitleTextAndClassTranslationOptions(TranslationOptions):
         fields=('title', 'text',)
 
-    translator.register(TitleTextAndClass, TitleTextAndClassTranslationOptions)
+    try:
+        translator.register(TitleTextAndClass, TitleTextAndClassTranslationOptions)
+    except AlreadyRegistered:
+        pass
 
     class SocialLinkTranslationOptions(TranslationOptions):
         fields=('title',)
 
-    translator.register(SocialLink, SocialLinkTranslationOptions)
+    try:
+        translator.register(SocialLink, SocialLinkTranslationOptions)
+    except AlreadyRegistered:
+        pass
 
     class CustomBlockTranslationOptions(TranslationOptions):
         fields=()
 
-    translator.register(CustomBlock, CustomBlockTranslationOptions)
+    try:
+        translator.register(CustomBlock, CustomBlockTranslationOptions)
+    except AlreadyRegistered:
+        pass
 
 
 

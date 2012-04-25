@@ -2,27 +2,38 @@
 from django.conf import settings
 
 if 'modeltranslation' in settings.INSTALLED_APPS:
-    from modeltranslation.translator import translator, TranslationOptions
+    from modeltranslation.translator import translator, TranslationOptions, AlreadyRegistered
     from models import *
 
     class AttachedSimpleTextTranslationOptions(TranslationOptions):
         fields=('title', 'text',)
-
-    translator.register(AttachedSimpleText, AttachedSimpleTextTranslationOptions)
+    try:
+        translator.register(AttachedSimpleText, AttachedSimpleTextTranslationOptions)
+    except AlreadyRegistered:
+        pass
 
     class AttachedRichTextTranslationOptions(TranslationOptions):
         fields=('title', 'text',)
 
-    translator.register(AttachedRichText, AttachedRichTextTranslationOptions)
+    try:
+        translator.register(AttachedRichText, AttachedRichTextTranslationOptions)
+    except AlreadyRegistered:
+        pass
 
     class AttachedLinkTranslationOptions(TranslationOptions):
         fields=('title',)
 
-    translator.register(AttachedLink, AttachedLinkTranslationOptions)
+    try:
+        translator.register(AttachedLink, AttachedLinkTranslationOptions)
+    except AlreadyRegistered:
+        pass
 
     class AttachedYoutubeVideoTranslationOptions(TranslationOptions):
         fields=('title', 'description')
 
-    translator.register(AttachedYoutubeVideo, AttachedYoutubeVideoTranslationOptions)
+    try:
+        translator.register(AttachedYoutubeVideo, AttachedYoutubeVideoTranslationOptions)
+    except AlreadyRegistered:
+        pass
 
 
