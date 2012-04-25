@@ -71,7 +71,7 @@ class CustomBlockAdmin(AdminBase):
         return super(CustomBlockAdmin, self).change_view(request, object_id, extra_context=None)
 
     class Media:
-        js = js_base
+        js = js_base + (settings.STATIC_URL + 'js/collapsed_inline.js',)
         css = css_base
 
 admin.site.register(CustomBlock, CustomBlockAdmin)
