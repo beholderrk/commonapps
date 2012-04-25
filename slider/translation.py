@@ -2,11 +2,13 @@
 from django.conf import settings
 
 if 'modeltranslation' in settings.INSTALLED_APPS:
-    from modeltranslation.translator import translator, TranslationOptions
+    from modeltranslation.translator import translator, TranslationOptions, AlreadyRegistered
     from models import Slide
 
     class SlideTranslationOptions(TranslationOptions):
         fields=('caption',)
 
-    translator.register(Slide, SlideTranslationOptions)
-
+    try:
+        translator.register(Slide, SlideTranslationOptions)
+    except AlreadyRegistered:
+        pass
