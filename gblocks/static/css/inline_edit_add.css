@@ -1,0 +1,5 @@
+.inlineTextPart         { position:relative;}
+.inlineTextPart:hover   { background-color:#d5f2d5;}
+.inlineEditLink         { display: none; width: 16px; height: 16px; background: url(../images/edit.png);}
+.inlineEditLink.edit    { display: block; position: absolute; left: -20px;}
+.top_pos                { position: absolute; top: 0;}
