@@ -33,6 +33,7 @@ class GenericFlatblockInline(generic.GenericTabularInline):
     ct_fk_field = 'object_id'
     extra = 1
     max_num = 1
+    readonly_fields = ['slug']
 
 class AbstractAdmin(AdminImageMixin, AdminBase):
     inlines = [GenericFlatblockInline,]

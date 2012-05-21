@@ -91,6 +91,12 @@ class SocialLink(models.Model):
     def __unicode__(self):
         return '(SocialLink) %s' % self.class_name
 
+class Phone(models.Model):
+    code = models.CharField(u'код', max_length=10, blank=True)
+    number = models.CharField(u'номер', max_length=20)
+
+    def __unicode__(self):
+        return "(Phone) %s %s" % (self.code, self.number)
 
 class CustomBlock(models.Model):
     images = generic.GenericRelation(AttachedImage, verbose_name=_(u'изображения'),
