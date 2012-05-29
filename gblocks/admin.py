@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.contrib import admin
 from django.contrib.contenttypes import generic
 from gblocks.models import *
@@ -27,6 +28,11 @@ else:
     js_base = ()
     css_base = {}
 
+class DisableDeleteFormSet(generic.BaseGenericInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        super(DisableDeleteFormSet, self).__init__(*args, **kwargs)
+        self.can_delete = False
+
 class GenericFlatblockInline(generic.GenericTabularInline):
     model = GenericFlatblock
     ct_field = 'content_type'
@@ -34,11 +40,19 @@ class GenericFlatblockInline(generic.GenericTabularInline):
     extra = 1
     max_num = 1
     readonly_fields = ['slug']
+    formset = DisableDeleteFormSet
 
 class AbstractAdmin(AdminImageMixin, AdminBase):
+    list_display = ['__unicode__', 'get_slug']
     inlines = [GenericFlatblockInline,]
-
     formfield_overrides = {models.TextField: {'widget':forms.Textarea(attrs={'class':'ckeditor'})}}
+
+    def get_slug(self, obj):
+        content_type = ContentType.objects.get_for_model(obj)
+        flatblock = GenericFlatblock.objects.get(object_id=obj.pk, content_type = content_type)
+        return flatblock.slug
+    get_slug.short_description = u'уникальный код'
+
     class Media:
         js = js_base +  (settings.MEDIA_URL + 'ckeditor/ckeditor.js',)
         css = css_base
