@@ -6,6 +6,7 @@ from sorl.thumbnail.fields import ImageField
 
 class Slider(models.Model):
     name = models.CharField(_(u'название'), max_length=250, help_text=_(u'название говорит о том где будет использован этот слайдер'))
+    options = models.TextField(_(u'опции'), blank=True)
 
     class Meta:
         verbose_name = u"слайдер"

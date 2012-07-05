@@ -19,7 +19,7 @@ class SliderNode(template.Node):
             context[self.var_name] = slides
             return ''
 
-        return render_to_string(self.template_name, {'slides': slides})
+        return render_to_string(self.template_name, {'slides': slides, 'slider': slider})
 
 @register.tag('slider')
 def do_slider(parser, token):
