@@ -7,7 +7,7 @@ class ActionSitemap(Sitemap):
     priority = 0.8
 
     def items(self):
-        return Action.objects.filter(active=True)
+        return Action.objects.filter(active=True).exclude(group__name='my_account')
 
     def location(self, obj):
-        return get_action_link(obj)
+        return get_action_link(obj).link
