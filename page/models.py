@@ -120,13 +120,6 @@ class Page(models.Model):
         except Exception:
             pass
 
-class PagesSitemap(Sitemap):
-    changefreq = "daily"
-    priority = 0.8
-
-    def items(self):
-        return Page.objects.filter(active=True)
-
 
 class PageBlock(models.Model):
     """Block for text page may contain text fields, images or files"""
