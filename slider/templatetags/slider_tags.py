@@ -1,5 +1,6 @@
 from django import template
 from django.template.loader import get_template, render_to_string
+from django.template.context import RequestContext
 from slider.models import Slider
 
 register = template.Library()
@@ -19,7 +20,8 @@ class SliderNode(template.Node):
             context[self.var_name] = slides
             return ''
 
-        return render_to_string(self.template_name, {'slides': slides, 'slider': slider})
+        request = context.get('request')
+        return render_to_string(self.template_name, {'slides': slides, 'slider': slider}, context_instance=RequestContext(request))
 
 @register.tag('slider')
 def do_slider(parser, token):

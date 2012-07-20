@@ -25,7 +25,7 @@ def get_action_link(action):
             view, args, kwargs =  resolve(bits[0])
             action.link = reverse(view, args=args, kwargs=kwargs)
         except Exception:
-            action.link = '#'
+            pass
     return action
 
 def is_selected(action, request):

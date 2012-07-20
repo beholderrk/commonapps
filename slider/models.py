@@ -20,7 +20,7 @@ class Slide(models.Model):
     """
     slider = models.ForeignKey(Slider, verbose_name=_(u'слайдер'),
                                help_text=_(u'выберите к какому сладеру будет относиться данных слайд'), blank=True, related_name='slides')
-    image = ImageField(_(u'изображение'), upload_to='slider')
+    image = ImageField(_(u'изображение'), upload_to='slider', blank=True)
     name = models.CharField(_(u'название'), blank=True, max_length=250, help_text=_(u'будет показываться при наведении на слайд; максимум 250 символов.'))
     caption = models.TextField(_(u'подпись'), blank=True)
     url = models.CharField(_(u'ссылка'), blank=True, max_length=1000)
