@@ -11,3 +11,10 @@ class ActionSitemap(Sitemap):
 
     def location(self, obj):
         return get_action_link(obj).link
+
+class PagesSitemap(Sitemap):
+    changefreq = "daily"
+    priority = 0.8
+
+    def items(self):
+        return Page.objects.filter(active=True)

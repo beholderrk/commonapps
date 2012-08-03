@@ -70,18 +70,11 @@ class CustomBlockAdmin(AdminBase):
         current_object = self.get_object(request, object_id)
 
         if current_object.visible_inlines:
-            self.inline_instances = []
+            self.inlines = []
             for visible_inline in current_object.visible_inlines.split(','):
                 inline_class = getattr(generic_content_admin, visible_inline, None) or getattr(filesandimages_admin, visible_inline, None)
                 if inline_class:
-                    self.inline_instances.append(inline_class(self.model, self.admin_site))
-        else:
-            self.inline_instances = [AttachedSimpleTextInline(self.model, self.admin_site),
-                                     AttachedRichTextInline(self.model, self.admin_site),
-                                     AttachedLinkInline(self.model, self.admin_site),
-                                     AttachedImageInline(self.model, self.admin_site),
-                                     AttachedFileInline(self.model, self.admin_site),
-                                     AttachedYoutubeVideoInline(self.model, self.admin_site)]
+                    self.inlines.append(inline_class)
 
         return super(CustomBlockAdmin, self).change_view(request, object_id, extra_context=None)
 
