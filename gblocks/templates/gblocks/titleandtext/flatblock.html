@@ -1,6 +1,2 @@
-{% extends 'gblocks/gblock_base.html' %}
-
-{% block body %}
-    <h1>{{ object.title }}</h1>
-    {{ object.text|safe }}
-{% endblock %}
+<h1 {% if admin_url %}rel="inlineedit" data-adminurl="{{ admin_url }}"{% endif %}>{{ object.title }}</h1>
+{{ object.text|safe }}
