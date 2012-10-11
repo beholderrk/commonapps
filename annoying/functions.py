@@ -21,9 +21,16 @@ def get_object_or_None(klass, *args, **kwargs):
 def get_first_or_None(qsinit, *args, **kwargs):
     if not qsinit:
         return None
+
+    if isinstance(qsinit, list):
+        try:
+            return qsinit[0]
+        except IndexError:
+            return None
+
     if isinstance(qsinit, QuerySet):
         queryset = qsinit
-    else:
+    elif isinstance(qsinit, type):
         queryset = _get_queryset(qsinit)
     try:
         return queryset.filter(*args, **kwargs)[0]
