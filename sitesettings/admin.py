@@ -5,6 +5,7 @@ class SettingsInline(admin.TabularInline):
     model = Settings
     fields = ['value']
     extra = 0
+    can_delete = False
 
 class SettingsGroupAdmin(admin.ModelAdmin):
     readonly_fields = ['code', 'name']
