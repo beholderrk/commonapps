@@ -45,7 +45,7 @@ class GenericFlatblockInline(generic.GenericTabularInline):
 class AbstractAdmin(AdminImageMixin, AdminBase):
     list_display = ['__unicode__', 'get_slug']
     inlines = [GenericFlatblockInline,]
-    formfield_overrides = {models.TextField: {'widget':forms.Textarea(attrs={'class':'ckeditor'})}}
+#    formfield_overrides = {models.TextField: {'widget':forms.Textarea(attrs={'class':'ckeditor'})}}
 
     def get_slug(self, obj):
         content_type = ContentType.objects.get_for_model(obj)
@@ -54,7 +54,7 @@ class AbstractAdmin(AdminImageMixin, AdminBase):
     get_slug.short_description = u'уникальный код'
 
     class Media:
-        js = js_base +  (settings.MEDIA_URL + 'ckeditor/ckeditor.js',)
+        js = js_base + (settings.MEDIA_URL + 'ckeditor/ckeditor.js', settings.STATIC_URL + 'js/ckeditor_show.js')
         css = css_base
 
 
