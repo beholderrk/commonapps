@@ -16,7 +16,7 @@ class GenericFlatblockNode(Node):
         self.template_path = template_path
         self.variable_name = variable_name
         self.store_in_object = store_in_object
-        self.visible_inlines = visible_inlines
+        self.visible_inlines = visible_inlines.strip('\'"') if visible_inlines else ''
 
     def generate_slug(self, slug, context):
         """
@@ -74,7 +74,7 @@ class GenericFlatblockNode(Node):
             generic_object = GenericFlatblock._default_manager.create(slug=slug, content_object=related_object)
 
         if hasattr(related_object, 'visible_inlines') and self.visible_inlines and  self.visible_inlines != related_object.visible_inlines:
-            related_object.visible_inlines = self.visible_inlines.strip('\'"')
+            related_object.visible_inlines = self.visible_inlines
             related_object.save()
         return generic_object, related_object
 
