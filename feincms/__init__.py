@@ -1,4 +1,4 @@
-VERSION = (1, 3, 0, 'rc1')
+VERSION = (1, 7, 4)
 __version__ = '.'.join(map(str, VERSION))
 
 
@@ -23,7 +23,7 @@ settings = LazySettings()
 
 
 COMPLETELY_LOADED = False
-def ensure_completely_loaded():
+def ensure_completely_loaded(force=False):
     """
     This method ensures all models are completely loaded
 
@@ -32,16 +32,41 @@ def ensure_completely_loaded():
     types.
 
     For more informations, have a look at issue #23 on github:
-    http://github.com/matthiask/feincms/issues#issue/23
+    http://github.com/feincms/feincms/issues#issue/23
     """
 
     global COMPLETELY_LOADED
-    if COMPLETELY_LOADED:
+    if COMPLETELY_LOADED and not force:
         return True
 
-    from django.core.management.validation import get_validation_errors
-    from StringIO import StringIO
-    get_validation_errors(StringIO(), None)
+    # Ensure meta information concerning related fields is up-to-date.
+    # Upon accessing the related fields information from Model._meta,
+    # the related fields are cached and never refreshed again (because
+    # models and model relations are defined upon import time, if you
+    # do not fumble around with models like we do in FeinCMS.)
+    #
+    # Here we flush the caches rather than actually _filling them so
+    # that relations defined after all content types registrations
+    # don't miss out.
+    from django.db.models import loading
+    for model in loading.get_models():
+        for cache_name in ('_field_cache', '_field_name_cache', '_m2m_cache',
+                '_related_objects_cache', '_related_many_to_many_cache',
+                '_name_map'):
+            try:
+                delattr(model._meta, cache_name)
+            except AttributeError:
+                pass
+
+    # Calls to get_models(...) are cached by the arguments used in the call.
+    # This cache is normally cleared in loading.register_models(), but we
+    # invalidate the get_models() cache, by calling get_models
+    # above before all apps have loaded. (Django's load_app() doesn't clear the
+    # get_models cache as it perhaps should). So instead we clear the
+    # get_models cache again here. If we don't do this, Django 1.5 chokes on
+    # a model validation error (Django 1.4 doesn't exhibit this problem).
+    # See Issue #323 on github.
+    loading.cache._get_models_cache.clear()
 
     COMPLETELY_LOADED = True
     return True

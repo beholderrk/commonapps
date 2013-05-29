@@ -6,7 +6,7 @@ if(!Array.indexOf) {
             }
         }
         return -1;
-    }
+    };
 }
 
 (function($){
@@ -15,7 +15,7 @@ if(!Array.indexOf) {
         Downcoder.Initialize() ;
         Downcoder.map["ö"] = Downcoder.map["Ö"] = "oe";
         Downcoder.map["ä"] = Downcoder.map["Ä"] = "ae";
-        Downcoder.map["ü"] = Downcoder.map["Ü"] = "ue";        
+        Downcoder.map["ü"] = Downcoder.map["Ü"] = "ue";
     }
 
     function feincms_gettext(s) {
@@ -45,6 +45,13 @@ if(!Array.indexOf) {
     }
 
 
+    SELECTS = {};
+    function save_content_type_selects() {
+        $('#main>.panel').each(function() {
+            SELECTS[this.id.replace(/_body$/, '')] = $("select[name=order-machine-add-select]", this).clone().removeAttr("name");
+        });
+    }
+
     function update_item_controls(item, target_region_id){
         var item_controls = item.find(".item-controls");
         item_controls.find(".item-control-units").remove(); // Remove all controls, if any.
@@ -54,7 +61,7 @@ if(!Array.indexOf) {
 
         // Insert control unit
         var insert_control = $("<div>").addClass("item-control-unit");
-        var select_content = $("#" + REGION_MAP[target_region_id] + "_body").find("select[name=order-machine-add-select]").clone().removeAttr("name");
+        var select_content = SELECTS[REGION_MAP[target_region_id]].clone();
         var insert_after = $("<input>").attr("type", "button").addClass("button").attr("value", feincms_gettext('After')).click(function(){
             var modvar = select_content.val();
             var modname = select_content.find("option:selected").html();
@@ -167,7 +174,7 @@ if(!Array.indexOf) {
     }
 
     function create_new_spare_form(modvar) {
-        var old_form_count = parseInt($('#id_'+modvar+'_set-TOTAL_FORMS').val());
+        var old_form_count = parseInt($('#id_'+modvar+'_set-TOTAL_FORMS').val(), 10);
         // **** UGLY CODE WARNING, avert your gaze! ****
         // for some unknown reason, the add-button click handler function
         // fails on the first triggerHandler call in some rare cases;
@@ -175,16 +182,13 @@ if(!Array.indexOf) {
         for(var i = 0; i < 2; i++){
             // Use Django's built-in inline spawing mechanism (Django 1.2+)
             // must use django.jQuery since the bound function lives there:
-            var returned = django.jQuery('#'+modvar+'_set-group').find(
+            django.jQuery('#'+modvar+'_set-group').find(
                 'div.add-row > a').triggerHandler('click');
-            if(returned==false) break; // correct return value
+            var new_form_count = parseInt($('#id_'+modvar+'_set-TOTAL_FORMS').val(), 10);
+            if(new_form_count > old_form_count){
+                return $('#'+modvar+'_set-'+(new_form_count-1));
+            }
         }
-        var new_form_count = parseInt($('#id_'+modvar+'_set-TOTAL_FORMS').val());
-        if(new_form_count > old_form_count){
-            return $('#'+modvar+'_set-'+(new_form_count-1));
-        }
-        // TODO: add fallback for older versions by manually cloning
-        // empty fieldset (provided using extra=1)
     }
 
     function set_item_field_value(item, field, value) {
@@ -234,10 +238,10 @@ if(!Array.indexOf) {
     }
 
     function sort_by_ordering(e1, e2) {
-      var v1 = parseInt($('.order-field', e1).val()) || 0;
-      var v2 = parseInt($('.order-field', e2).val()) || 0;
+      var v1 = parseInt($('.order-field', e1).val(), 10) || 0;
+      var v2 = parseInt($('.order-field', e2).val(), 10) || 0;
       return  v1 > v2 ? 1 : -1;
-    };
+    }
 
     function give_ordering_to_content_types() {
       for (var i=0; i<REGION_MAP.length;i++) {
@@ -262,11 +266,6 @@ if(!Array.indexOf) {
             contentblock_init_handlers[i]();
     }
 
-    function identify_feincms_inlines(){
-        // add feincms_inline class to divs which contains feincms inlines
-        $('div.inline-group h2:contains("Feincms_Inline:")').parent().addClass("feincms_inline");
-    }
-
     function hide_form_rows_with_hidden_widgets(){
         /* This is not normally done in django -- the fields are shown
            with visible labels and invisible widgets, but FeinCMS used to
@@ -282,11 +281,60 @@ if(!Array.indexOf) {
         });
     }
 
+    function init_content_type_buttons() {
+        $('#main > .panel').each(function() {
+            var $select = $('select[name=order-machine-add-select]', this),
+                to_remove = [];
+
+            for (var i=0; i<CONTENT_TYPE_BUTTONS.length; i++) {
+                var c = CONTENT_TYPE_BUTTONS[i],
+                    $option = $select.find('option[value=' + c.type + ']');
+
+                if (!$option.length)
+                    continue;
+
+                var $button = $('<a href="#" class="actionbutton" />');
+                $button.attr('title', CONTENT_NAMES[c.type]);
+
+                $button.addClass(c.cssclass ? c.cssclass : c.type).bind('click', (function(c) {
+                    return function() {
+                        var fieldset = ItemEditor.add_content_to_current(c.type);
+                        if (c.raw_id_picker) {
+                            var id = fieldset.find('.related-lookup, span.mediafile').attr('id');
+
+                            if (id) {
+                                window.open(c.raw_id_picker,
+                                    id_to_windowname(id.replace(/^lookup_/, '')),
+                                    'height=500,width=800,resizable=yes,scrollbars=yes').focus();
+                            }
+                        }
+                        if (c.after)
+                            c.after.call(null, fieldset);
+                        return false;
+                    };
+                })(c));
+
+                $select.before($button);
+
+                if (!c.keep)
+                    to_remove.push($option);
+            }
+
+            for (var i=0; i<to_remove.length; i++)
+                to_remove[i].remove();
+
+            if ($select.find('option').length == 0) {
+                // hide the content type select box and the add button if
+                // the dropdown is empty now
+                $select.hide().next().hide();
+            }
+        });
+    }
+
     // global variable holding the current template key
     var current_template;
 
     $(document).ready(function($){
-        identify_feincms_inlines();
         hide_form_rows_with_hidden_widgets();
 
         $("#main_wrapper > .navi_tab").click(function(){
@@ -303,9 +351,17 @@ if(!Array.indexOf) {
             window.location.replace('#tab_'+tab_str);
         });
 
+        // save content type selects for later use
+        save_content_type_selects();
+
         $("input.order-machine-add-button").click(function(){
             var select_content = $(this).prev();
             var modvar = select_content.val();
+
+            // bail out early if no content type selected
+            if (!modvar)
+                return;
+
             var modname = select_content.find("option:selected").html();
             var new_fieldset = create_new_fieldset_from_module(modvar, modname);
             add_fieldset(ACTIVE_REGION, new_fieldset, {where:'append', animate:true});
@@ -324,7 +380,6 @@ if(!Array.indexOf) {
                         var id = item.find(".item-content > div").attr('id');
                         var modvar = id.replace(/_set-\d+$/, '');
                         var count = $('#id_'+modvar+'_set-TOTAL_FORMS').val();
-                        $('#id_'+modvar+'_set-TOTAL_FORMS').val(count-1);
                         // remove form:
                         item.find(".item-content").remove();
 
@@ -337,7 +392,12 @@ if(!Array.indexOf) {
                     else{ // saved on server, don't remove form
                         set_item_field_value(item,"delete-field","checked");
                     }
-                    item.fadeOut(200);
+                    item.fadeOut(200, function() {
+                      var region_item = $("#"+REGION_MAP[ACTIVE_REGION]+"_body");
+                      if (region_item.children("div.order-machine").children(":visible").length == 0) {
+                          region_item.children("div.empty-machine-msg").show();
+                      }
+                    });
                 }
                 $(".popup_bg").remove();
             });
@@ -384,16 +444,21 @@ if(!Array.indexOf) {
             jConfirm(msg, CHANGE_TEMPLATE_MESSAGES[0], function(ret) {
                 if(ret) {
                     for(var i=0; i<not_in_new.length; i++) {
-                        var items = $('#'+not_in_new[i]+'_body div.order-machine').children();
-                        // FIXME: this moves all soon-to-be-homeless items
-                        // to the first region, but that region is quite likely
-                        // not in the new template.
-                        move_item(0, items);
+                        var body = $('#' + not_in_new[i] + '_body'),
+                            machine = body.find('.order-machine'),
+                            inputs = machine.find('input[name$=region]');
+
+                        inputs.val(new_regions[0]);
                     }
 
                     input_element.checked = true;
 
-                    $('form').append('<input type="hidden" name="_continue" value="1" />').submit();
+                    $('#page_form').append('<input type="hidden" name="_continue" value="1" />');
+                    /* Simulate a click on the save button instead of form.submit(), so
+                       that the submit handlers from FilteredSelectMultiple get
+                       invoked. See Issue #372 */
+                    $('#page_form input[type=submit][name=_save]').click();
+
                 } else {
                     $("div#popup_bg").remove();
                     $(input_element).val($(input_element).data('original_value')); // Restore original value
@@ -463,7 +528,26 @@ if(!Array.indexOf) {
 
         order_content_types_in_regions();
 
+        // hide now-empty formsets
         $('div.feincms_inline').hide();
+
+        // add quick buttons to order machine control
+        init_content_type_buttons();
+
+        // DRY object-tools addition
+        $(".extra-object-tools li").appendTo("ul.object-tools");
+        $(".extra-object-tools").remove();
+
+        /* handle Cmd-S and Cmd-Shift-S as save-and-continue and save respectively */
+        $(document.documentElement).keydown(function(event) {
+            if(event.which == 83 && event.metaKey) {
+                sel = event.shiftKey ? 'form:first input[name=_continue]' :
+                    'form:first input[name=_save]';
+                $(sel).click();
+                return false;
+            }
+        });
+
 
         var errors = $('#main div.errors');
 
@@ -484,6 +568,20 @@ if(!Array.indexOf) {
         }
     });
 
-    $(window).load(function(){init_contentblocks()});
+    $(window).load(function(){init_contentblocks();});
+
+    // externally accessible helpers
+    window.ItemEditor = {
+        add_content: function(type, region) {
+            var new_fieldset = create_new_fieldset_from_module(type, CONTENT_NAMES[type]);
+            add_fieldset(region, new_fieldset, {where: 'append', animate: 'true'});
+            update_item_controls(new_fieldset, region);
+            return new_fieldset;
+        },
+
+        add_content_to_current: function(type) {
+            return ItemEditor.add_content(type, ACTIVE_REGION);
+        }
+    };
 
 })(feincms.jQuery);
