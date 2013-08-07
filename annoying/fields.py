@@ -67,3 +67,9 @@ class JSONField(models.TextField):
             value = json.dumps(value, cls=DjangoJSONEncoder)
         return super(JSONField, self).get_db_prep_save(value, *args, **kwargs)
 
+try:
+    # add support for South migrations
+    from south.modelsinspector import add_introspection_rules
+    add_introspection_rules([], ['^annoying\.fields\.JSONField'])
+except ImportError:
+    pass
